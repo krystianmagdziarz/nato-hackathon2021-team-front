@@ -1,0 +1,12 @@
+django
+celery
+celery
+django-celery-results
+django-celery-beat
+redis
+djangorestframework
+django-import-export
+django-cors-headers
+scikit-learn
+neo4j
+requests

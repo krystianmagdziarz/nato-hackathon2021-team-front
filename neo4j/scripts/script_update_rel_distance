@@ -1,0 +1,29 @@
+//do zaktualizowania property polaczenia danego wezla z innym wezlem
+//Trzeba zaktualizowac najpierw jedna relacje, nastepnie druga (powrotna).
+//Po aktualizacji wartosci relacji trzeba usunac obecny graf (zawiera on stare dane, bo zostal wczesniej wygenerowany) i utworzyc nowy
+
+//Przyklad:
+
+MATCH (:Grid {name: 'S18'})-[rel:CONNECTION]->(:Grid {name: 'S17'})
+
+SET rel.distance = 40
+RETURN rel
+
+MATCH (:Grid {name: 'S17'})-[rel:CONNECTION]->(:Grid {name: 'S18'})
+
+SET rel.distance = 40
+RETURN rel
+
+// usunecie grafu (script_drop_graph)
+CALL gds.graph.drop('mapGraph')
+
+// utworzenie grafu z nowymi danymi(script_create_graph)
+CALL gds.graph.create(
+    'mapGraph',
+    'Grid',
+    'CONNECTION',
+    {
+        nodeProperties: ['latitude', 'longitude'],
+        relationshipProperties: ['distance', 'time']
+    }
+)

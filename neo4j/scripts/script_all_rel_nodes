@@ -1,0 +1,3 @@
+Match (n:Grid{name: 'R13'})-[r]->(m:Grid)
+Return 
+m.name AS nodeNames

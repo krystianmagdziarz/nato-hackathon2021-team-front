@@ -1,0 +1,77 @@
+.legendContent{
+  display: flex;
+  width: 100%;
+
+  :global{
+    .ant-col{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.legendItem{
+  margin-left: 12px;
+}
+
+
+:global{
+  .hospital-dot{
+    height: 16px;
+    width: 16px;
+    background-color: green;
+    display: inline-block;
+  }
+
+  .hospital-dot2{
+    height: 16px;
+    width: 16px;
+    background-color: blue;
+    display: inline-block;
+  }
+
+  .hospital-dot3{
+    height: 16px;
+    width: 16px;
+    background-color: orange;
+    display: inline-block;
+  }
+
+  .casualty-dot{
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .casualty-dot2{
+    height: 10px;
+    width: 10px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .safe-route{
+    border: none;
+    border-top: 4px dashed orange;
+    width: 100px;
+  }
+
+  .danger-route{
+    border: none;
+    border-top: 4px dashed red;
+    width: 100px;
+  }
+
+  .gradient-dot{
+    height: 20px;
+    width: 20px;
+    background: radial-gradient(circle, rgba(100,109,232,1) 0%, rgba(244,88,88,1) 100%);
+    border-radius: 50%;
+    display: inline-block;
+  }
+}

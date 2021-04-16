@@ -1,0 +1,9 @@
+CALL gds.graph.create(
+    'mapGraph',
+    'Grid',
+    'CONNECTION',
+    {
+        nodeProperties: ['latitude', 'longitude'],
+        relationshipProperties: ['distance', 'time']
+    }
+)

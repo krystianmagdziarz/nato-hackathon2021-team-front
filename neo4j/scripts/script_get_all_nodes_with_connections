@@ -1,0 +1,2 @@
+Match (n:Grid)-[r]->(m:Grid)
+Return n,r,m

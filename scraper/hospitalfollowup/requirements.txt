@@ -1,0 +1,4 @@
+scrapy==2.4.1
+requests==2.24.0
+jsonpickle==1.4.1
+pyramid==1.10

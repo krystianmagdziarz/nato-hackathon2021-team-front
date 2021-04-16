@@ -1,0 +1,49 @@
+//do zaktualizowania wszystkich powiazan danego wezla
+//najpierw dostac liste wszystkich wezlow ktore sa z nim powiazane
+//dla kazdego elementu tej listy (nazwy wezla) wykonac update 
+
+//przyklad
+
+Match (n:Grid{name: 'R13'})-[r]->(m:Grid)
+Return 
+m.name AS nodeNames
+
+//zwroci
+ [
+  "Q13",
+  "R12",
+  "R14",
+  "S13"
+]
+
+//teraz dla kazdego elementu wykonac update pamietajac o drodze powrotnej
+//po update usunac i utworzyc nowy graf za pomoca script_create_graph
+// pokazany tylko update dla pierwszego kroku
+
+MATCH (:Grid {name: 'R13'})-[rel:CONNECTION]->(:Grid {name: 'Q13'})
+
+SET rel.distance = 40
+RETURN rel
+
+MATCH (:Grid {name: 'Q13'})-[rel:CONNECTION]->(:Grid {name: 'R13'})
+
+SET rel.distance = 40
+RETURN rel
+
+//
+//... aktualizacje pozostalych elementow
+//
+
+// usunecie grafu (script_drop_graph)
+CALL gds.graph.drop('mapGraph')
+
+// utworzenie grafu z nowymi danymi(script_create_graph)
+CALL gds.graph.create(
+    'mapGraph',
+    'Grid',
+    'CONNECTION',
+    {
+        nodeProperties: ['latitude', 'longitude'],
+        relationshipProperties: ['distance', 'time']
+    }
+)

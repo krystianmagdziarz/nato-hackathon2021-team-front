@@ -1,0 +1,85 @@
+version: '3.3'
+
+services:
+  web:
+    build: ./hackathonbackend
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./hackathonbackend:/home/app/web
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis_container
+  redis_container:
+    image: redis:6.0
+    command: redis-server
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - TZ="Europe/Warsaw"
+    volumes:
+      - ./redis-data:/var/lib/redis
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+  celery:
+    build: ./hackathonbackend
+    command: celery -A hackathonbackend worker -l error --concurrency=8 --max-tasks-per-child=1 --prefetch-multiplier=1 --without-heartbeat
+    volumes:
+      - ./hackathonbackend:/home/app/web
+    depends_on:
+      - web
+      - redis_container
+      - self_internal_worker_1
+  celery_beat:
+    build: ./hackathonbackend
+    command: celery -A hackathonbackend beat -l error --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=
+    volumes:
+      - ./hackathonbackend:/home/app/web
+    depends_on:
+      - web
+      - redis_container
+      - self_internal_worker_1
+  neo4jhackathon:
+    container_name: neo4jhackathon
+    image: neo4j:4.0
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./neo4j/conf:/conf
+      - ./neo4j/data:/data
+      - ./neo4j/import:/import
+      - ./neo4j/logs:/logs
+      - ./neo4j/plugins:/plugins
+    environment:
+      # Raise memory limits
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=1G
+      - NEO4J_dbms_memory_heap_max__size=1G
+      - NEO4J_dbms_connector_bolt_advertised__address=localhost:7687
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*,gds.*
+      - NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]
+  frontend:
+    build: ./hackatonfrontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./hackatonfrontend/:/app/
+      - /app/node_modules/
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+  self_internal_worker_1:
+    build: ./scraper
+    command: python3 server.py
+    volumes:
+      - ./scraper:/home/app/web/
+    ports:
+      - "6543:6543"
+networks:
+  hackathonbackend_default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

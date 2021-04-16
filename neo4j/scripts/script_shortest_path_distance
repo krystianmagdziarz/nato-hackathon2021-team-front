@@ -1,0 +1,17 @@
+MATCH (source:Grid {name: 'B9'}), (target:Grid {name: 'C8'})
+CALL gds.beta.shortestPath.astar.stream('mapGraph', {
+    sourceNode: id(source),
+    targetNode: id(target),
+    latitudeProperty: 'latitude',
+    longitudeProperty: 'longitude',
+    relationshipWeightProperty: 'distance'
+})
+YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs
+RETURN
+    index,
+    gds.util.asNode(sourceNode).name AS sourceNodeName,
+    gds.util.asNode(targetNode).name AS targetNodeName,
+    totalCost,
+    [nodeId IN nodeIds | gds.util.asNode(nodeId).name] AS nodeNames,
+    costs
+ORDER BY index
